@@ -1,0 +1,114 @@
+package com.example.controlpractice
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            MaterialTheme {
+                PracticeScreen()
+            }
+        }
+    }
+}
+
+@Composable
+fun PracticeScreen() {
+    val nameState = rememberTextFieldState()
+    var greeting by rememberSaveable { mutableStateOf("Результат пока не сформирован") }
+    var successCount by rememberSaveable { mutableStateOf(0) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_student),
+            contentDescription = "Силуэт студента",
+            modifier = Modifier.size(100.dp),
+            contentScale = ContentScale.Fit
+        )
+
+        Text(
+            text = "Анкета студента",
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = "Введите имя и нажмите кнопку, чтобы увидеть приветствие.",
+            fontSize = 15.sp
+        )
+
+        TextField(
+            state = nameState,
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text("Ваше имя") },
+            placeholder = { Text("Например, Анна") },
+            lineLimits = TextFieldLineLimits.SingleLine
+        )
+
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Button(onClick = {
+                val name = nameState.text.toString().trim()
+                if (name.isEmpty()) {
+                    greeting = "Ошибка: сначала введите имя"
+                } else {
+                    greeting = "Здравствуйте, $name!"
+                    successCount += 1
+                }
+            }) {
+                Text("Показать")
+            }
+
+            Button(onClick = {
+                nameState.clearText()
+                greeting = "Результат пока не сформирован"
+                successCount = 0
+            }) {
+                Text("Очистить")
+            }
+        }
+
+        Text(text = greeting, fontSize = 18.sp)
+        Text(text = "Успешных нажатий: $successCount", color = Color.Gray)
+    }
+}
